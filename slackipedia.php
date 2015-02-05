@@ -1,6 +1,22 @@
 <?php
 
-// Read the slash command, create vars for post back to webhook
+/*
+	Set up some variables for customization.
+*/
+
+$wiki_lang = "en"; // prepended to search URL to determine which language you're searching in
+$search_limit = "5"; // WikiMedia API defaults to 10. This defaults to 5. Do what thou wilt.
+
+/*
+	The WikiMedia API requests that the client is identified by a User-Agent string
+	http://www.mediawiki.org/wiki/API:Etiquette#User-Agent_header
+*/
+
+$user_agent = "Slackipedia/1.0 (https://github.com/mccreath/slackipedia; mccreath@gmail.org)";
+
+/* 
+	Grab values from the slash command, create vars for post back to webhook
+*/
 
 $command = $_POST['command'];
 $text = $_POST['text'];
@@ -11,27 +27,25 @@ $channel_name = $_POST['channel_name'];
 $user_id = $_POST['user_id'];
 $user_name = $_POST['user_name'];
 
-/* Encode $text for search string */
+/* 
+	Encode $text for search string 
+*/
 
 $encoded_text = urlencode($text);
 
 /*
 	Call Wikipedia API with cURL (must be a GET)
-	The Wikimedia API requests that the client is identified by a User-Agent string
-	http://www.mediawiki.org/wiki/API:Etiquette#User-Agent_header
 */
 
-$wch_url = 'http://en.wikipedia.org/w/api.php?action=opensearch&search='.$encoded_text.'&format=json&limit=5';
+$wch_url = "http://".$wiki_lang.".wikipedia.org/w/api.php?action=opensearch&search=".$encoded_text."&format=json&limit=".$search_limit;
 
 $wch = curl_init();
 curl_setopt_array($wch, array(
     CURLOPT_RETURNTRANSFER => 1,
     CURLOPT_URL => $wch_url,
-    CURLOPT_USERAGENT => 'Slackipedia/1.0 (http://dmccreath.org/slackipedia/; mccreath@gmail.org)',
+    CURLOPT_USERAGENT => $user_agent,
 ));
-// Send the request & save response to $wch_resp
 $wch_resp = curl_exec($wch);
-// Close request to clear up some resources
 curl_close($wch);
 
 
@@ -132,25 +146,20 @@ $data = array(
 );
 $json_string = json_encode($data);        
 
-$data_string = $json_string;
-
-
 if($token == 'rfszle7MC9JVHZGZ3iib1TZj'){
 	$ch = curl_init("https://hooks.slack.com/services/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");  // test
 } else {
 	$ch = curl_init("https://hooks.slack.com/services/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");  //dahveedtest
 }
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
-curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $json_string);
 curl_setopt($ch, CURLOPT_CRLF, true);                                                               
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
 curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
     "Content-Type: application/json",                                                                                
-    "Content-Length: " . strlen($data_string))                                                                       
+    "Content-Length: " . strlen($json_string))                                                                       
 );                                                                                                                   
- 
 $result = curl_exec($ch);
-
 curl_close($ch);
 
 
