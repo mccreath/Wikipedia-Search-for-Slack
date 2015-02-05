@@ -91,20 +91,24 @@ $wch_arr = json_decode($wch_resp);
 	$wch_att_desc = $wch_arr[2][0]."\n";
 	$wch_att_link = $wch_arr[3][0];
 
-	$wch_att_text = "";
-
-	if(strtolower($wch_arr[2][0]) == $disamb_check){
-		$wch_att_text .= "There are lots of possible results for *<".$wch_att_link."|".$text.">*.\n";
-		$wch_att_other = "_Here are a few options:_\n";
+	if(count($wch_arr[1]) == 0){
+		$wch_att_text = "Sorry! I couldn't find anything like that.";
 	} else {
-		$wch_att_text		.= 	$wch_att_desc;
-		$wch_att_other 	= 	"\n_Here are some other options:_\n";
-		$wch_att_text		.= 	$wch_att_link;
+		$wch_att_text = "";
+
+		if(strtolower($wch_arr[2][0]) == $disamb_check){
+			$wch_att_text .= "There are lots of possible results for *<".$wch_att_link."|".$text.">*.\n";
+			$wch_att_other = "_Here are a few options:_\n";
+		} else {
+			$wch_att_text		.= 	$wch_att_desc;
+			$wch_att_other 	= 	"\n_Here are some other options:_\n";
+			$wch_att_text		.= 	$wch_att_link;
+		}
+		foreach ($other_options as $value) {
+			$wch_att_other .= $value."\n";
+		}
+		
 	}
-	foreach ($other_options as $value) {
-		$wch_att_other .= $value."\n";
-	}
-	
 	
 // Send it back through the webhook
 $data = array(
