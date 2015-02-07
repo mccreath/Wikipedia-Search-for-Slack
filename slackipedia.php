@@ -1,11 +1,21 @@
 <?php
 
 /*
-	Set up some variables for customization.
+	Config.
 */
 
-$wiki_lang = "en"; // prepended to search URL to determine which language you're searching in
-$search_limit = "4"; // WikiMedia API defaults to 10. This defaults to 4, so you get 1 result and 3 other options. Do what thou wilt.
+
+// Slack webhook URL, from the webhook config page
+if($token == 'rfszle7MC9JVHZGZ3iib1TZj'){
+	$slack_webhook_url = "https://hooks.slack.com/services/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";  // test
+} else {
+	$slack_webhook_url = "https://hooks.slack.com/services/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";  //dahveedtest
+}
+
+// prepended to search URL to determine which language you're searching in
+$wiki_lang = "en";
+// WikiMedia API defaults to 10. This defaults to 4, so you get 1 result and 3 other options. Do what thou wilt.
+$search_limit = "4"; 
 
 /*
 	The WikiMedia API requests that the client is identified by a User-Agent string
@@ -155,11 +165,7 @@ $data = array(
 );
 $json_string = json_encode($data);        
 
-if($token == 'rfszle7MC9JVHZGZ3iib1TZj'){
-	$ch = curl_init("https://hooks.slack.com/services/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");  // test
-} else {
-	$ch = curl_init("https://hooks.slack.com/services/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");  //dahveedtest
-}
+$ch = curl_init($slack_webhook_url);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
 curl_setopt($ch, CURLOPT_POSTFIELDS, $json_string);
 curl_setopt($ch, CURLOPT_CRLF, true);                                                               
