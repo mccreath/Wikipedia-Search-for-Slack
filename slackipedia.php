@@ -109,13 +109,14 @@ $wch_arr = json_decode($wch_resp);
 		$wch_att_text = "Sorry! I couldn't find anything like that.";
 	} else {
 		$wch_att_text = "";
+		$wch_att_other = "";
 
 		if(strtolower($wch_arr[2][0]) == $disamb_check){
-			$wch_att_text .= "There are lots of possible results for *<".$wch_att_link."|".$text.">*.\n";
-			$wch_att_other = "_Here are a few options:_\n";
+			$wch_att_text .= "There are lots of possible results for *<".$wch_att_link."|".$text.">*.\n\n";
+			$wch_att_other_title = "Here are a few options:";
 		} else {
-			$wch_att_text		.= 	$wch_att_desc;
-			$wch_att_other 	= 	"\n_Here are some other options:_\n";
+			$wch_att_text		.= 	$wch_att_desc."\n\n";
+			$wch_att_other_title 	= 	"Here are some other options:";
 			$wch_att_text		.= 	$wch_att_link;
 		}
 		foreach ($other_options as $value) {
