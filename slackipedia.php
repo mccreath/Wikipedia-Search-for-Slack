@@ -115,9 +115,9 @@ $wch_arr = json_decode($wch_resp);
 			$wch_att_text .= "There are lots of possible results for *<".$wch_att_link."|".$text.">*.\n\n";
 			$wch_att_other_title = "Here are a few options:";
 		} else {
-			$wch_att_text		.= 	$wch_att_desc;
-			$wch_att_other_title 	= 	"Here are some other options:";
+			$wch_att_text		.= 	$wch_att_desc."\n";
 			$wch_att_text		.= 	$wch_att_link;
+			$wch_att_other_title 	= 	"Here are some other options:";
 		}
 		foreach ($other_options as $value) {
 			$wch_att_other .= $value."\n";
@@ -144,7 +144,7 @@ $data = array(
  			),
  			"fields" => array(
  				array(
- 					"title" => $wch_att_title,
+ 					"title" => $wch_att_other_title,
  					"value" => $wch_att_other
  				)
  			)
