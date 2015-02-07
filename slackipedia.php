@@ -106,10 +106,9 @@ $wch_arr = json_decode($wch_resp);
 
 	$other_options_count = count($other_options);
 	
-	$wch_text = "<@".$user_id."|".$user_name."> searched for *".$text."*.";
+	$wch_text = "<@".$user_id."|".$user_name."> searched for *".$text."*.\n";
 
-	$disamb_check = $text." may refer to:";
-	//$disamb_text = "There are lots of possible results for *".$text."*.\n";
+	$disamb_check = "may refer to:";
 
 	$wch_att_title	= 	$wch_arr[1][0];
 	$wch_att_desc = $wch_arr[2][0];
@@ -120,21 +119,20 @@ $wch_arr = json_decode($wch_resp);
 	} else {
 		$wch_att_text = "";
 		$wch_att_other = "";
-
-		if(strtolower($wch_arr[2][0]) == $disamb_check){
-			// $wch_att_text .= "There are lots of possible results for *<".$wch_att_link."|".$text.">*.\n\n";
-			$wch_text .= "\nThere are lots of possible results for *<".$wch_att_link."|".$text.">*.\n\n";
-			$wch_att_other_title = "Here are a few options:";
+		if (strpos($wch_arr[2][0],$disamb_check) !== false) { // see if it's a disambiguation page
+			$wch_text	.= "There are several possible results for ";
+			$wch_text	.= "*<".$wch_att_link."|".$text.">*.\n";
+			$wch_text	.= $wch_att_link;
+			$wch_att_other_title = "Here are some of the possibilities:";
 		} else {
-			// $wch_att_text		.= 	$wch_att_desc."\n";
-			// $wch_att_text		.= 	$wch_att_link;
-			$wch_text	.= 	"\n*".$wch_att_title."*\n".$wch_att_desc."\n".$wch_att_link;
-			$wch_att_other_title 	= 	"Here are some other options:";
+			$wch_text	.= 	"*<".$wch_att_link."|".$wch_att_title.">*\n";
+			$wch_text	.= 	$wch_att_desc."\n";
+			$wch_text	.= 	$wch_att_link;
+			$wch_att_other_title 	= 	"Here are a few other options:";
 		}
 		foreach ($other_options as $value) {
 			$wch_att_other .= $value."\n";
 		}
-		
 	}
 	
 // Send it back through the webhook
