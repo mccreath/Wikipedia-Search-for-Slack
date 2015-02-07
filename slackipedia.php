@@ -141,7 +141,7 @@ $data = array(
 	"channel" => $channel_id,
 	"text" => $wch_text,
  	"mrkdwn" => true,
- 	"icon_url" => "http://dmccreath.org/slackipedia/wikipedia-logo_small.png",
+ 	"icon_url" => "http://dmccreath.org/slackipedia/wikipedia-logo-cc-by-sa.png",
  	"attachments" => array(
  		 array(
 			"color" => "#b0c4de",
