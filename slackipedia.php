@@ -5,7 +5,7 @@
 */
 
 $wiki_lang = "en"; // prepended to search URL to determine which language you're searching in
-$search_limit = "5"; // WikiMedia API defaults to 10. This defaults to 5. Do what thou wilt.
+$search_limit = "4"; // WikiMedia API defaults to 10. This defaults to 4, so you get 1 result and 3 other options. Do what thou wilt.
 
 /*
 	The WikiMedia API requests that the client is identified by a User-Agent string
@@ -96,13 +96,13 @@ $wch_arr = json_decode($wch_resp);
 
 	$other_options_count = count($other_options);
 	
-	$wch_text = "You searched for *".$text."*.";
+	$wch_text = "<@".$user_id."|".$user_name."> searched for *".$text."*.";
 
 	$disamb_check = $text." may refer to:";
-	$disamb_text = "There are lots of possible results for *".$text."*.\n";
+	//$disamb_text = "There are lots of possible results for *".$text."*.\n";
 
 	$wch_att_title	= 	$wch_arr[1][0];
-	$wch_att_desc = $wch_arr[2][0]."\n";
+	$wch_att_desc = $wch_arr[2][0];
 	$wch_att_link = $wch_arr[3][0];
 
 	if(count($wch_arr[1]) == 0){
@@ -115,7 +115,7 @@ $wch_arr = json_decode($wch_resp);
 			$wch_att_text .= "There are lots of possible results for *<".$wch_att_link."|".$text.">*.\n\n";
 			$wch_att_other_title = "Here are a few options:";
 		} else {
-			$wch_att_text		.= 	$wch_att_desc."\n\n";
+			$wch_att_text		.= 	$wch_att_desc;
 			$wch_att_other_title 	= 	"Here are some other options:";
 			$wch_att_text		.= 	$wch_att_link;
 		}
@@ -144,7 +144,7 @@ $data = array(
  			),
  			"fields" => array(
  				array(
- 					"title" => "Here are some other options:",
+ 					"title" => $wch_att_title,
  					"value" => $wch_att_other
  				)
  			)
