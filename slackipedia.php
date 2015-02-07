@@ -136,10 +136,16 @@ $data = array(
 			"color" => "#b0c4de",
  			"title" => $wch_att_title,
  			"fallback" => $wch_att_text,
- 			"text" => $wch_att_text.$wch_att_other,
+ 			"text" => $wch_att_text,
  			"mrkdwn_in" => array(
  				"fallback",
  				"text"
+ 			),
+ 			"fields" => array(
+ 				array(
+ 					"title" => "Here are some other options:",
+ 					"value" => $wch_att_other
+ 				)
  			)
  		)
  	)
