@@ -112,11 +112,13 @@ $wch_arr = json_decode($wch_resp);
 		$wch_att_other = "";
 
 		if(strtolower($wch_arr[2][0]) == $disamb_check){
-			$wch_att_text .= "There are lots of possible results for *<".$wch_att_link."|".$text.">*.\n\n";
+			// $wch_att_text .= "There are lots of possible results for *<".$wch_att_link."|".$text.">*.\n\n";
+			$wch_text .= "\nThere are lots of possible results for *<".$wch_att_link."|".$text.">*.\n\n";
 			$wch_att_other_title = "Here are a few options:";
 		} else {
-			$wch_att_text		.= 	$wch_att_desc."\n";
-			$wch_att_text		.= 	$wch_att_link;
+			// $wch_att_text		.= 	$wch_att_desc."\n";
+			// $wch_att_text		.= 	$wch_att_link;
+			$wch_text	.= 	"\n*".$wch_att_title."*\n".$wch_att_desc."\n".$wch_att_link;
 			$wch_att_other_title 	= 	"Here are some other options:";
 		}
 		foreach ($other_options as $value) {
@@ -135,7 +137,7 @@ $data = array(
  	"attachments" => array(
  		 array(
 			"color" => "#b0c4de",
- 			"title" => $wch_att_title,
+ 		//	"title" => $wch_att_title,
  			"fallback" => $wch_att_text,
  			"text" => $wch_att_text,
  			"mrkdwn_in" => array(
