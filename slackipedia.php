@@ -6,11 +6,7 @@
 
 
 // Slack webhook URL, from the webhook config page
-if($token == 'rfszle7MC9JVHZGZ3iib1TZj'){
-	$slack_webhook_url = "https://hooks.slack.com/services/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";  // test
-} else {
-	$slack_webhook_url = "https://hooks.slack.com/services/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";  //dahveedtest
-}
+$slack_webhook_url = "https://hooks.slack.com/services/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";  //dahveedtest
 
 // prepended to search URL to determine which language you're searching in
 $wiki_lang = "en";
@@ -36,6 +32,11 @@ $channel_id = $_POST['channel_id'];
 $channel_name = $_POST['channel_name'];
 $user_id = $_POST['user_id'];
 $user_name = $_POST['user_name'];
+
+// override for using on Slack Test. Remove from public version.
+if($token == 'rfszle7MC9JVHZGZ3iib1TZj'){
+	$slack_webhook_url = "https://hooks.slack.com/services/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";  // test
+}
 
 /* 
 	Encode $text for search string 
