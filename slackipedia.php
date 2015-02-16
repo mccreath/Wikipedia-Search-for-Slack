@@ -56,7 +56,7 @@ curl_setopt_array($wch, array(
     CURLOPT_URL => $wch_url,
     CURLOPT_USERAGENT => $user_agent,
 ));
-$wch_resp = curl_exec($wch)
+$wch_resp = curl_exec($wch);
 if($wch_resp === FALSE ){
 	$wch_text = "There was a problem reaching Wikipedia. This might be helpful: The cURL error is " . curl_error($ch);
 } else {
