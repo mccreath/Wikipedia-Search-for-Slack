@@ -56,55 +56,22 @@ curl_setopt_array($wch, array(
     CURLOPT_URL => $wch_url,
     CURLOPT_USERAGENT => $user_agent,
 ));
-$wch_resp = curl_exec($wch);
+$wch_resp = curl_exec($wch)
+if($wch_resp === FALSE ){
+	$wch_text = "There was a problem reaching Wikipedia. This might be helpful: The cURL error is " . curl_error($ch);
+} else {
+	$wch_text = "";
+}
 curl_close($wch);
 
 
 /*	Handle the returned data from Wikipedia */
 
-$wch_arr = json_decode($wch_resp);
-	
-/*
-	
-	The array that comes back from Wikipedia has 4 nodes.
-	
-	The [0] node in the array is the search string (maybe an array for multi-word strings?)
-	
-	Each subsequent node is an array
-	
-	[1] is page titles (in 'apollo' example, there are 5, 0-4)
-	[2] is page summaries/snippets (again, 0-4)
-	[3] is page URLs (guess what, 0-4)
-	
-	So, for now, we'll do as an attachment:
-	
-	msg text: You searched for [0]. 
-	
-	attachment title	[1][0]
-	attachment text 	[2][0] \n 
-						[3][0] \n
-						*other possibilities*
-						[3][1] \n
-						[3][2] \n
-						[3][3] \n
-						*search again on Wikipedia*
-						<search url>
-	
-	
-	From http://stackoverflow.com/questions/8926805/how-to-use-json-decode-to-extract-an-inner-information
+if($wch_resp !== FALSE){
 
-	Pass TRUE to json_decode as second parameter
-
-	$output = json_decode($input,TRUE);
-	Then traverse the arrays. It should be something like $output['g'][0]['g9']['text3']['g91']
-*/
-
-
-
+	$wch_arr = json_decode($wch_resp);
 	$other_options = $wch_arr[3];
-
 	$first_item = array_shift($other_options);
-
 	$other_options_count = count($other_options);
 	
 	$wch_text = "<@".$user_id."|".$user_name."> searched for *".$text."*.\n";
@@ -112,8 +79,8 @@ $wch_arr = json_decode($wch_resp);
 	$disamb_check = "may refer to:";
 
 	$wch_att_title	= 	$wch_arr[1][0];
-	$wch_att_desc = $wch_arr[2][0];
-	$wch_att_link = $wch_arr[3][0];
+	$wch_att_desc		=		$wch_arr[2][0];
+	$wch_att_link		=		$wch_arr[3][0];
 
 	if(count($wch_arr[1]) == 0){
 		$wch_att_text = "Sorry! I couldn't find anything like that.";
@@ -135,6 +102,8 @@ $wch_arr = json_decode($wch_resp);
 			$wch_att_other .= $value."\n";
 		}
 	}
+
+}
 	
 // Send it back through the webhook
 $data = array(
@@ -175,6 +144,43 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 );                                                                                                                   
 $result = curl_exec($ch);
 curl_close($ch);
+
+
+
+/*
+	
+	The array that comes back from Wikipedia has 4 nodes.
+	
+	The [0] node in the array is the search string (maybe an array for multi-word strings?)
+	
+	Each subsequent node is an array
+	
+	[1] is page titles (in 'apollo' example, there are 5, 0-4)
+	[2] is page summaries/snippets (again, 0-4)
+	[3] is page URLs (guess what, 0-4)
+	
+	So, for now, we'll do as an attachment:
+	
+	msg text: You searched for [0]. 
+	
+	attachment title	[1][0]
+	attachment text 	[2][0] \n 
+						[3][0] \n
+						*other possibilities*
+						[3][1] \n
+						[3][2] \n
+						[3][3] \n
+						*search again on Wikipedia*
+						<search url>
+	
+	
+	From http://stackoverflow.com/questions/8926805/how-to-use-json-decode-to-extract-an-inner-information
+
+	Pass TRUE to json_decode as second parameter
+
+	$output = json_decode($input,TRUE);
+	Then traverse the arrays. It should be something like $output['g'][0]['g9']['text3']['g91']
+*/
 
 
 
