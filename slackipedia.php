@@ -46,9 +46,14 @@ $encoded_text = urlencode($text);
 $wch_url = "http://".$wiki_lang.".wikipedia.org/w/api.php?action=opensearch&search=".$encoded_text."&format=json&limit=".$search_limit;
 
 
-$wch = curl_init($wch_url);
-curl_setopt($wch, CURLOPT_RETURNTRANSFER, true); 
-curl_setopt($wch, CURLOPT_USERAGENT, $user_agent);
+
+
+$wch = curl_init();
+curl_setopt_array($wch, array(
+    CURLOPT_RETURNTRANSFER => 1,
+    CURLOPT_URL => $wch_url,
+    CURLOPT_USERAGENT => $user_agent,
+));
 $wch_resp = curl_exec($wch);
 if($wch_resp === FALSE ){
 	$wch_text = "There was a problem reaching Wikipedia. This might be helpful: The cURL error is " . curl_error($ch);
