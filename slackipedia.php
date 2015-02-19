@@ -1,9 +1,6 @@
 <?php
 
-/*
-	Config.
-*/
-
+/*	Configuration */
 
 // Slack webhook URL, from the webhook config page
 $slack_webhook_url = "https://hooks.slack.com/services/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";  //dahveedtest
