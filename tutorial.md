@@ -7,8 +7,10 @@ Wikipedia is good to use for this because you don't need an API key to access th
 ## What we'll be using
 
 * PHP (http://php.net)
-* JSON (JavaScript Object Notation - http://_____)
+* JSON (JavaScript Object Notation - http://json.org/)
 * cURL (http://curl.haxxe.se)
+
+Don't worry too much if you've never used one or more of those. Our use of them will be thoroughly explained in the tutorial.
 
 ## What you'll need:
 
