@@ -9,3 +9,7 @@ Requirements
 
 Comments in the script will guide you through the setup if you're familiar with those three things. There's also a tutorial in this repo if you're not familiar with them.
 
+## To do
+
+* Flesh out the tutorial 
+* Convert to other languages/environments (RoR, Node, Go, Python)
