@@ -12,5 +12,6 @@ Comments in the script will guide you through the setup if you're familiar with 
 
 ## To do
 
-* Flesh out the tutorial 
+* Flesh out the [tutorial](docs/tutorial.html)
 * Convert to other languages/environments (RoR, Node, Go, Python)
+
