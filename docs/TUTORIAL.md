@@ -40,10 +40,22 @@ Our script is going to
 * Accept the results returned by the Wikipedia search and figure out what to do with them
 * Format the results into a proper JSON payload for the incoming webhook
 * Use cURL to send the formatted JSON to the incoming webhook's URL
-* Profit!
-
 
 ## Set up your slash command
 
 Go to your integrations page at Slack (http://my.slack.com/services/new) and scroll down to the bottom section, "DIY Integrations & Customizations". Click on the "Add" button for "Slash Commands".
+
+![Add a slash command integration](add-slash-command.png)
+
+Create the text command itself. This is the text that the user will type after the slash. I use `wikip`, because it's just enough to indicate that this isn't just any wiki that you're searching. But you could use the entire word `Wikipedia` or `searchwiki`. Whatever makes the most sense for your command and your users.
+
+![Create the command](create-command.png)
+
+To include your new slash command in the autocomplete list, check the box, then add a short description and a usage hint. This is especially useful if you need to create a longer command for your users. The description and usage hint will display in the autocomplete list.
+
+Finally, enter the descriptive label. This is what will show on the list of slash commands in your integrations list page, so make it something relevant.
+
+![Add hint, usage, and label](hing-usage-label.png)
+
+
 

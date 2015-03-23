@@ -1,11 +1,30 @@
 <?php
 
+/*
+
+## REQUIREMENTS
+
+* A custom slash command on a Slack team
+* A web server running PHP5 with cURL enabled
+
+## USAGE
+
+* Place the `slackipedia.php` script on a server running PHP5 with cURL.
+* Set up a new custom slash command on your Slack team: http://my.slack.com/services/new/slash-commands
+* Under "Choose a command", enter whatever you want for the command. /isitup is easy to remember.
+* Under "URL", enter the URL for the script on your server.
+* Leave "Method" set to "Post".
+* Decide whether you want this command to show in the autocomplete list for slash commands.
+* If you do, enter a short description and usage hint.
+
+*/
+
 /*	Configuration */
 
 //  Slack webhook URL - from the webhook config page
 $slack_webhook_url = "https://hooks.slack.com/services/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";
 
-//  Icon URL - Where ever you put the from the zip archive
+//  Icon URL - Where ever you put the image from the zip archive
 $icon_url = "http://dmccreath.org/slackipedia/wikipedia-logo-cc-by-sa_0.png";
 
 //  prepended to search URL to determine which language you're searching in
