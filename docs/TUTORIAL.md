@@ -16,7 +16,8 @@ Don't worry too much if you've never used one or more of those. Our use of them 
 
 ## What you'll need:
 
-* A hosting account running PHP 5 and cURL where you can put the script we're going to write
+* A plain text editor. If you want a free one, I recommend TextWrangler for Mac (http://barebones.com/products/textwrangler/) or Notepad++ for Windows (http://notepad-plus-plus.org/)
+* A hosting account running PHP 5 and cURL where you can put the script we're going to write. Pretty much any shared hosting account in the world should work for this.
 * A Slack account (a free one is fine)
 * A custom slash command on Slack
 * An internal webhook on Slack
@@ -85,8 +86,12 @@ Save your settings again, and you're done with the webhook for the moment.
 
 ## The PHP script
 
-* Get a text editor (TextWrangler and ... )
 * Talk about cURL and how it works in PHP
+
+### cURL
+
+cURL (http://curl.haxx.se) is an open source tool that lets you transfer data with URL syntax, which is what web browsers use, and as a result, much of the web uses. Being able to transfer data with URL syntax is what makes webhooks work. The great thing about cURL is that not only can you use it from the command line (which makes it easy to use for testing things), but you can interact with it from most modern scripting language. PHP has had support for cURL for years, and we're going to take advantage of that so that our script can receive data from Slack and then send it back in. Being a mature open source tool, there are thousands of ways to use cURL, but we're not going to get into all of that. We'll be using a few very basic commands that are common for this type of task. All of the cURL that we use in this script will be transferrable to any other webhook script that you want to write. 
+
 * Set up config
 * Step by step through the rest
 
