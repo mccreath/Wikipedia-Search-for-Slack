@@ -51,6 +51,45 @@ Create the text command itself. This is the text that the user will type after t
 
 ![Create the command](create-command.png)
 
+For now you can leave everything else empty. We'll come back and finish setting this up in a bit. Just scroll down to the bottom and click the "Save Integration" button.
+
+## Set up your webhook
+
+Go to your integrations page at Slack (http://my.slack.com/services/new) and scroll down to the bottom section, "DIY Integrations & Customizations". Click on the "Add" button for "Incoming Webhooks".
+
+// Add webhook screenshot
+
+All incoming webhooks require a default channel to post to. We're going to see how to override that default later, but for now, either pick one of your existing channels or use the "create new channel" option to make new channel.
+
+When you've done that click the "Add Incoming Webhook Integration" button.
+
+// Select channel and add integration screenshot
+
+Put "Slackipedia" in the Descriptive Label field. This will help you distinguish this webhook from any others you set up in your list of configured integrations.
+
+// Descriptive field screenshot
+
+Also put "Slackipedia" in the Customize Name field. This is what the webhook will use as a "username" when it posts to your channels.
+
+// Customize name screenshot
+
+PRO TIP: Save your settings now before trying to add the custom icon. There's a little bug with the webhook page right now where you'll have to re-enter some of your settings if you don't save them first.
+
+Now you can upload the Wikipedia logo icon that's in the code package you downloaded. (Or, you know, use something inferior.)
+
+// Custom icon screenshot
+
+Save your settings again, and you're done with the webhook for the moment.
+
+## The PHP script
+
+* Get a text editor (TextWrangler and ... )
+* Talk about cURL and how it works in PHP
+* Set up config
+* Step by step through the rest
+
+/* Slash command config */
+
 To include your new slash command in the autocomplete list, check the box, then add a short description and a usage hint. This is especially useful if you need to create a longer command for your users. The description and usage hint will display in the autocomplete list.
 
 Finally, enter the descriptive label. This is what will show on the list of slash commands in your integrations list page, so make it something relevant.
