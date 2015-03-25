@@ -1,6 +1,6 @@
 # Tutorial
 
-// screenshots should be 714 pixels wide
+<!-- screenshots should be 714 pixels wide -->
 
 This very simple demo will take you through the process of setting up both a custom slash command (https://api.slack.com/slash-commands) and an incoming webhook (https://api.slack.com/incoming-webhooks).
 
@@ -59,27 +59,27 @@ For now you can leave everything else empty. We'll come back and finish setting 
 
 Go to your integrations page at Slack (http://my.slack.com/services/new) and scroll down to the bottom section, "DIY Integrations & Customizations". Click on the "Add" button for "Incoming Webhooks".
 
-// Add webhook screenshot
+<!-- Add webhook screenshot -->
 
 All incoming webhooks require a default channel to post to. We're going to see how to override that default later, but for now, either pick one of your existing channels or use the "create new channel" option to make new channel.
 
 When you've done that click the "Add Incoming Webhook Integration" button.
 
-// Select channel and add integration screenshot
+<!-- Select channel and add integration screenshot -->
 
 Put "Slackipedia" in the Descriptive Label field. This will help you distinguish this webhook from any others you set up in your list of configured integrations.
 
-// Descriptive field screenshot
+<!-- Descriptive field screenshot -->
 
 Also put "Slackipedia" in the Customize Name field. This is what the webhook will use as a "username" when it posts to your channels.
 
-// Customize name screenshot
+<!-- Customize name screenshot -->
 
 PRO TIP: Save your settings now before trying to add the custom icon. There's a little bug with the webhook page right now where you'll have to re-enter some of your settings if you don't save them first.
 
 Now you can upload the Wikipedia logo icon that's in the code package you downloaded. (Or, you know, use something inferior.)
 
-// Custom icon screenshot
+<!-- Custom icon screenshot -->
 
 Save your settings again, and you're done with the webhook for the moment.
 
@@ -90,13 +90,13 @@ Save your settings again, and you're done with the webhook for the moment.
 * Set up config
 * Step by step through the rest
 
-/* Slash command config */
+<!-- Slash command config -->
 
 To include your new slash command in the autocomplete list, check the box, then add a short description and a usage hint. This is especially useful if you need to create a longer command for your users. The description and usage hint will display in the autocomplete list.
 
 Finally, enter the descriptive label. This is what will show on the list of slash commands in your integrations list page, so make it something relevant.
 
-![Add hint, usage, and label](hing-usage-label.png)
+![Add hint, usage, and label](hint-usage-label.png)
 
 
 
