@@ -86,13 +86,85 @@ Save your settings again, and you're done with the webhook for the moment.
 
 ## The PHP script
 
-* Talk about cURL and how it works in PHP
+Now we're going to go step by step through the PHP script. If PHP isn't your jam, this should still be pretty simple to apply to the language of your choice. 
 
-### cURL
+### cURL, briefly
 
-cURL (http://curl.haxx.se) is an open source tool that lets you transfer data with URL syntax, which is what web browsers use, and as a result, much of the web uses. Being able to transfer data with URL syntax is what makes webhooks work. The great thing about cURL is that not only can you use it from the command line (which makes it easy to use for testing things), but you can interact with it from most modern scripting language. PHP has had support for cURL for years, and we're going to take advantage of that so that our script can receive data from Slack and then send it back in. Being a mature open source tool, there are thousands of ways to use cURL, but we're not going to get into all of that. We'll be using a few very basic commands that are common for this type of task. All of the cURL that we use in this script will be transferrable to any other webhook script that you want to write. 
+If you're familiar with cURL, feel free to jump over this section.
+
+cURL (http://curl.haxx.se) is an open source tool that lets you transfer data with URL syntax, which is what web browsers use, and as a result, much of the web uses. Being able to transfer data with URL syntax is what makes webhooks work. The thing about cURL that's useful for us is that not only can you use it from the command line (which makes it easy to use for testing things), but you can interact with it from most modern scripting language. 
+
+PHP has had support for cURL for years, and we're going to take advantage of that so that our script can receive data from Slack and then send it back in. We'll be using a few very basic commands that are common for this type of task. All of the cURL that we use in this script will be transferrable to any other webhook script that you want to write. 
 
 * Set up config
+
+### Set up your config
+
+There are a few things we're going to need for the script, so let's get those set up at the very top.
+
+First, your incoming webhook URL. This tells the script where to send the reply it gets back from Wikipedia. Get this URL from your incoming webhook configuration page.
+
+    $slack_webhook_url = ""; // put your webhook url between those quotes https://hooks.slack.com/services/TXXXXXXXX/BXXXXXXXX/xxxxxxxxxxxxxxxxxxxxxxxx
+    
+Next, the icon for your integration. You probably remember that we already set a custom icon for the webhook on the configuration page, but you can also specify within the webhook's payload. This is useful if you want to reuse the webhook itself for a few slash commands, or just as a fallback for the one on the configuration page.
+
+    $icon_url = ""; // the URL for where you upload the image, eg http://domain.com/slackipedia/wikipedia-logo-cc-by-sa_0.png
+    
+And now some defaults for Wikipedia itself.
+
+You can change the language you're searching in with this. Set it to `en` for English. You can find other language options here: <!-- languages url -->
+
+    $wiki_lang = "en";
+    
+By default, the WikiMedia API will return 10 search results. That will make for a very long message in Slack, so I like to default it to 4. You can play around with this and see what makes the most sense for your team.
+
+    $search_limit = "4"; 
+
+Finally, the WikiMedia API requests that the client is identified by a User-Agent string (http://www.mediawiki.org/wiki/API:Etiquette#User-Agent_header). Feel free to leave this set to this, or you can update it with any info you want.
+
+    $user_agent = "Slackipedia/1.0 (https://github.com/mccreath/slackipedia; mccreath@gmail.org)";
+
+### Now for the action
+
+The first thing you need to do when the script is called by your slash command is grab all the values from the command and make variables out of them. We'll use most of them at various points in the script, and the variable names will be easy to remember.
+
+First, the command string itself. In our case, `wikip`
+
+    $command = $_POST['command'];
+    
+Next, the text that was entered with the command. For this webhook, this will be the search string we send to Wikipedia.
+     
+    $text = $_POST['text'];
+    
+The token is an additional identifier that's sent with the slash command that you could use to verify that what's calling your script is actually your slash command.
+<!-- think about actually adding this. not a bad example to set. just put it in a die statement. -->
+    
+    $token = $_POST['token'];
+    
+The team ID is useful if you want to use this same script for multiple teams and send back different formatting.
+    
+    $team_id = $_POST['team_id'];
+    
+The channel ID is the channel where the slash command was issued. We'll use this later in the script to tell the webhook to return the results to that same channel. 
+    
+    $channel_id = $_POST['channel_id'];
+    
+The channel name could be used the same way.
+    
+    $channel_name = $_POST['channel_name'];
+    
+The user ID is handy if you want to keep track of who's using the webhook, or to return something besides the user name with the results.
+    
+    $user_id = $_POST['user_id'];
+    
+We're going to display the user name with the webhook message, just so it's clear who caused the message to appear in the channel.
+    
+    $user_name = $_POST['user_name'];
+
+
+
+
+
 * Step by step through the rest
 
 <!-- Slash command config -->

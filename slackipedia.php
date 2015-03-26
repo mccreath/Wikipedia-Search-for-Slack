@@ -27,6 +27,8 @@ $slack_webhook_url = "https://hooks.slack.com/services/T02NFGBSH/B02TC7RRC/xjLe3
 //  Icon URL - Where ever you put the image from the zip archive
 $icon_url = "http://dmccreath.org/slackipedia/wikipedia-logo-cc-by-sa_0.png";
 
+/* Wikipedia defaults */
+
 //  prepended to search URL to determine which language you're searching in
 $wiki_lang = "en";
 //  WikiMedia API defaults to 10. This defaults to 4, so you get 1 result and 3 other options. Do what thou wilt.
