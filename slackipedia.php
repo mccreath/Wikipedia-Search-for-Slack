@@ -55,7 +55,7 @@ $user_name = $_POST['user_name'];
 $encoded_text = urlencode($text);
 
 //  Create URL for Wikipedia API, which requires using GET
-$wiki_url = "http://".$wiki_lang.".wikipedia.org/w/api.php?action=opensearch&search=".$encoded_text."&format=json&limit=".$search_limit;
+$wiki_url = "https://".$wiki_lang.".wikipedia.org/w/api.php?action=opensearch&search=".$encoded_text."&format=json&limit=".$search_limit;
 
 //  Call the URL
 $wiki = curl_init($wiki_url);
