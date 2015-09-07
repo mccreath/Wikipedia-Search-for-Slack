@@ -82,9 +82,9 @@ if($wiki_resp !== FALSE){
 
 	$disamb_check = "may refer to:";
 
-	$wiki_att_title	= 	$wiki_arr[1][0];
-	$wiki_att_desc		=		$wiki_arr[2][0];
-	$wiki_att_link		=		$wiki_arr[3][0];
+	$wiki_att_title		= 	$wiki_arr[1][0];
+	$wiki_att_desc		=	$wiki_arr[2][0];
+	$wiki_att_link		=	$wiki_arr[3][0];
 
 	if(count($wiki_arr[1]) == 0){
 		$wiki_att_text = "Sorry! I couldn't find anything like that.";

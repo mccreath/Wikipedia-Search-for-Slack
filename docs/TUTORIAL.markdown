@@ -105,7 +105,7 @@ There are a few things we're going to need for the script, so let's get those se
 First, your incoming webhook URL. This tells the script where to send the reply it gets back from Wikipedia. Get this URL from your incoming webhook configuration page.
 
 ```php
-$slack_webhook_url = ""; // put your webhook url between those quotes https://hooks.slack.com/services/TXXXXXXXX/BXXXXXXXX/xxxxxxxxxxxxxxxxxxxxxxxx
+$slack_webhook_url = "https://hooks.slack.com/services/T0XXXXXXX/B0XXXXXXX/xxxxxxxxxxxxxxxxxxxxxxxx"; // replace that URL with your webhook URL 
 ```
     
 Next, the icon for your integration. You probably remember that we already set a custom icon for the webhook on the configuration page, but you can also specify within the webhook's payload. This is useful if you want to reuse the webhook itself for a few slash commands, or just as a fallback for the one on the configuration page.
@@ -180,6 +180,21 @@ $encoded_text = urlencode($text);
 
 And before we can actually send the URL to Wikipedia, we need to create it. So a new variable called `$wiki_url`, which uses PHP's string concatenation to add some of the variables we've been creating to the standard Wikipedia API search URL.
 
+The MediaWiki API responds to GET requests, which means that all the search values are passed to the server as part of the URL. For our search we're going to pass four values.
+
+* `action`, which tells the Wikipedia server what function of the API we're going to use. In our case it's going to be `opensearch`. 
+* `search`, which is the string will be looking for. In our case it will be our `$encoded_text` variable.
+* `format`, which tells the Wikipedia server how we want to receive the data it sends back. We want `json`.
+* `limit`, which tells the Wikipedia server how many results to return to us. We're going to limit it to `4` for this tutorial. You can do any number, but bear in mind the context of a Slack channel and whether it would make sense in that context to have 10, or even 20, results. It probably wouldn't.
+
+The completed URL will look like this:
+
+```php
+http://en.wikipedia.org/w/api.php?action=opensearch&search=searchtext&format=json&limit=4
+```
+
+Taking that and replacing all the appropriate parts with our variables results in this:
+
 ```php
 #
 # Create URL for Wikipedia API, which requires using GET
@@ -227,9 +242,144 @@ And now we close the cURL connection, so there's not something on your server ju
 curl_close($wiki);
 ```
     
-Okay, assuming we got some data back from Wikipedia, let's get it properly organized for sending back through our webhook.
+If we got anything back from Wikipedia, we need to get it properly organized for sending back through our webhook. Let's take a look at what Wikipedia sends back in their search results. It's important to know that all sites structure their JSON in the way that makes sense for their data, which means you need to understand what that structure is and how to transform it into the structure that Slack's webhooks use. 
 
-* Step by step through the rest
+We'll use the search term `airship` as our example. If you paste this URL into a browser's address bar (or run it with cURL in a terminal):
+
+```
+http://en.wikipedia.org/w/api.php?action=opensearch&search=airship&format=json&limit=4
+```
+
+You'll get back a JSON object that looks like this:
+
+```json
+[
+    "airship",
+    [
+        "Airship",
+        "Airship Italia",
+        "Airship Industries",
+        "Airship (Final Fantasy)"
+    ],
+    [
+        "An airship or dirigible is a type of aerostat or lighter-than-air aircraft which can navigate through the air under its own power.",
+        "Airship Italia was a semi-rigid airship used by Italian engineer Umberto Nobile in his second series of flights around the North Pole.",
+        "Airship Industries was a British manufacturers of modern non-rigid airships (blimps) active under that name from 1970 to the present day and controlled for part of that time by Alan Bond.",
+        "This is a redirect from a page that was merged into the target page. This page was kept as a redirect to the corresponding main page on the topic it names, in order to preserve this page's edit history after its content was merged into the target page's content."
+    ],
+    [
+        "http://en.wikipedia.org/wiki/Airship",
+        "http://en.wikipedia.org/wiki/Airship_Italia",
+        "http://en.wikipedia.org/wiki/Airship_Industries",
+        "http://en.wikipedia.org/wiki/Airship_(Final_Fantasy)"
+    ]
+]
+```
+
+It's a very simple object, with no more information in it than is absolutely necessary. The first item in the array is the search term. That's followed by three more arrays, each of which has four quoted strings in it, separated by commas. Knowing what we know about Wikipedia, we can make some guesses as to what each of those objects.
+
+* First is a page title
+* Second is a page summary 
+* Third is a page URL
+
+Fortunately, that's all we need to build a nicely formatted and informative message to return to Slack. 
+
+However, it will be much easier to work with the data in PHP if we turn it into an array first. So we'll use PHP's `json_decode()` function, which does just that.
+
+```php
+$wiki_array = json_decode($wiki_response);
+```
+
+That will give us a standard indexed PHP array which would look like this. Notice that all of the items we got back from Wikipedia now have numbers associated with them. The number for each item is called its `index`, and an array that uses numbers to identify its contents like this is called an "indexed array".
+
+```php
+$wiki_arr = array(
+	[0] => airship
+	[1] => Array(
+			[0] => Airship
+			[1] => Airship Italia
+			[2] => Airship Industries
+			[3] => Airship (Final Fantasy)
+		)
+	[2] => Array(
+			[0] => An airship or dirigible is a type of aerostat or lighter-than-air aircraft which can navigate through the air under its own power.
+			[1] => Airship Italia was a semi-rigid airship used by Italian engineer Umberto Nobile in his second series of flights around the North Pole.
+			[2] => Airship Industries was a British manufacturers of modern non-rigid airships (blimps) active under that name from 1970 to the present day and controlled for part of that time by Alan Bond.
+			[3] => This is a redirect from a page that was merged into the target page. This page was kept as a redirect to the corresponding main page on the topic it names, in order to preserve this page's edit history after its content was merged into the target page's content.
+		)
+	[3] => Array(
+			[0] => http://en.wikipedia.org/wiki/Airship
+			[1] => http://en.wikipedia.org/wiki/Airship_Italia
+			[2] => http://en.wikipedia.org/wiki/Airship_Industries
+			[3] => http://en.wikipedia.org/wiki/Airship_(Final_Fantasy)
+		)
+)
+```
+
+In an indexed array, we reference each item in the array by its index. Using the array above, if we wanted to make a variable with the title for the Wikipedia page "Airship", we would use `$wiki_arr[1][0]`. That basically tells PHP "Look in the array called `$wiki_arr`, go to index `[1]`, and within that, find index `[0]`.
+
+Building on that, if we want to make variables from the title, summary, and URL for the page "Airship".
+
+```php
+$title = $wiki_arr[1][0]
+$summary = $wiki_arr[2][0]
+$url = $wiki_arr[3][0]
+```
+
+To do the same thing for the page "Airship Italia", it would look like this.
+
+```php
+$title = $wiki_arr[1][1]
+$summary = $wiki_arr[2][1]
+$url = $wiki_arr[3][1]
+```
+
+See the pattern? All the titles are in index `[1]`, all the summaries are in index `[2]`, all the URLs are in index `[3]`.
+
+
+So, we'll use an `if` statement to see if we got something.
+
+```php
+if($wiki_resp !== FALSE){
+```
+
+```php
+$wiki_arr = json_decode($wiki_resp);
+$other_options = $wiki_arr[3];
+$first_item = array_shift($other_options);
+$other_options_count = count($other_options);
+	
+	$wiki_text = "<@".$user_id."|".$user_name."> searched for *".$text."*.\n";
+
+	$disamb_check = "may refer to:";
+
+	$wiki_att_title	= 	$wiki_arr[1][0];
+	$wiki_att_desc		=		$wiki_arr[2][0];
+	$wiki_att_link		=		$wiki_arr[3][0];
+
+	if(count($wiki_arr[1]) == 0){
+		$wiki_att_text = "Sorry! I couldn't find anything like that.";
+	} else {
+		$wiki_att_text = "";
+		$wiki_att_other = "";
+		if (strpos($wiki_arr[2][0],$disamb_check) !== false) { // see if it's a disambiguation page
+			$wiki_text	.= "There are several possible results for ";
+			$wiki_text	.= "*<".$wiki_att_link."|".$text.">*.\n";
+			$wiki_text	.= $wiki_att_link;
+			$wiki_att_other_title = "Here are some of the possibilities:";
+		} else {
+			$wiki_text	.= 	"*<".$wiki_att_link."|".$wiki_att_title.">*\n";
+			$wiki_text	.= 	$wiki_att_desc."\n";
+			$wiki_text	.= 	$wiki_att_link;
+			$wiki_att_other_title 	= 	"Here are a few other options:";
+		}
+		foreach ($other_options as $value) {
+			$wiki_att_other .= $value."\n";
+		}
+	}
+}
+```
+
 
 <!-- Slash command config -->
 
