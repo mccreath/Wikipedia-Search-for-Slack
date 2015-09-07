@@ -58,48 +58,58 @@ $encoded_text = urlencode($text);
 $wiki_url = "https://".$wiki_lang.".wikipedia.org/w/api.php?action=opensearch&search=".$encoded_text."&format=json&limit=".$search_limit;
 
 //  Call the URL
-$wiki = curl_init($wiki_url);
-curl_setopt($wiki, CURLOPT_RETURNTRANSFER, true); 
-curl_setopt($wiki, CURLOPT_USERAGENT, $user_agent);
-$wiki_resp = curl_exec($wiki);
-if($wiki_resp === FALSE ){
-	$wiki_text = "There was a problem reaching Wikipedia. This might be helpful: The cURL error is " . curl_error($wiki);
+$wiki_call = curl_init($wiki_url);
+curl_setopt($wiki_call, CURLOPT_RETURNTRANSFER, true); 
+curl_setopt($wiki_call, CURLOPT_USERAGENT, $user_agent);
+$wiki_response = curl_exec($wiki_call);
+if($wiki_response === FALSE ){
+	$message_text = "There was a problem reaching Wikipedia. This might be helpful: The cURL error is " . curl_error($wiki);
 } else {
-	$wiki_text = "";
+	$message_text = "";
 }
-curl_close($wiki);
+curl_close($wiki_call);
 
 
 //  Handle the returned data from Wikipedia
-if($wiki_resp !== FALSE){
+if($wiki_response !== FALSE){
 
-	$wiki_arr = json_decode($wiki_resp);
-	$other_options = $wiki_arr[3];
-	$first_item = array_shift($other_options);
-	$other_options_count = count($other_options);
+	// Turn the response into an array
+	$wiki_array = json_decode($wiki_response);
 	
-	$wiki_text = "<@".$user_id."|".$user_name."> searched for *".$text."*.\n";
+	// Put all the links into their own array, then remove the first item
+	// This will become our "Other Options" list
+	$other_options = $wiki_array[3];
+	array_shift($other_options);
+	
+	// Identify the user, link name, and reflect the search term
+	$message_text = "<@".$user_id."|".$user_name."> searched for *".$text."*.\n";
 
-	$disamb_check = "may refer to:";
+	// Determine if our first result is a disambiguation page
+	// NOTE: This is not the most reliable method, and will need to be changed depending 
+	// on the languge of the wiki being searched, but it's the only reliable way to check
+	if (strpos($wiki_array[2][0],"may refer to:") !== false) {
+    $disambiguation_check = TRUE;
+	}
 
-	$wiki_att_title		= 	$wiki_arr[1][0];
-	$wiki_att_desc		=	$wiki_arr[2][0];
-	$wiki_att_link		=	$wiki_arr[3][0];
+	// Set variables for the first result
+	$message_primary_title		= $wiki_array[1][0];
+	$message_primary_summary	=	$wiki_array[2][0];
+	$message_primary_link			=	$wiki_array[3][0];
 
-	if(count($wiki_arr[1]) == 0){
+	if(count($wiki_array[1]) == 0){
 		$wiki_att_text = "Sorry! I couldn't find anything like that.";
 	} else {
 		$wiki_att_text = "";
 		$wiki_att_other = "";
-		if (strpos($wiki_arr[2][0],$disamb_check) !== false) { // see if it's a disambiguation page
-			$wiki_text	.= "There are several possible results for ";
-			$wiki_text	.= "*<".$wiki_att_link."|".$text.">*.\n";
-			$wiki_text	.= $wiki_att_link;
+		if ($disambiguation_check){
+			$message_text	.= "There are several possible results for ";
+			$message_text	.= "*<".$message_primary_link."|".$text.">*.\n";
+			$message_text	.= $message_primary_link;
 			$wiki_att_other_title = "Here are some of the possibilities:";
 		} else {
-			$wiki_text	.= 	"*<".$wiki_att_link."|".$wiki_att_title.">*\n";
-			$wiki_text	.= 	$wiki_att_desc."\n";
-			$wiki_text	.= 	$wiki_att_link;
+			$message_text	.= 	"*<".$message_primary_link."|".$message_primary_title.">*\n";
+			$message_text	.= 	$message_primary_summary."\n";
+			$message_text	.= 	$message_primary_link;
 			$wiki_att_other_title 	= 	"Here are a few other options:";
 		}
 		foreach ($other_options as $value) {
@@ -113,13 +123,13 @@ if($wiki_resp !== FALSE){
 $data = array(
 	"username" => "Slackipedia",
 	"channel" => $channel_id,
-	"text" => $wiki_text,
+	"text" => $message_text,
  	"mrkdwn" => true,
  	"icon_url" => $icon_url,
  	"attachments" => array(
  		 array(
 			"color" => "#b0c4de",
- 		//	"title" => $wiki_att_title,
+ 		//	"title" => $message_primary_title,
  			"fallback" => $wiki_att_text,
  			"text" => $wiki_att_text,
  			"mrkdwn_in" => array(
