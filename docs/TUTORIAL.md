@@ -397,55 +397,58 @@ if($wiki_response !== FALSE){
 While we're working with the array, we'll put our non-primary results into their own array called `$other_options` so they'll be easier to work with. We're only going to display the link for each of these items, which are all in the third sub-array of `$wiki_array`. 
 
 ```php
-$other_options = $wiki_array[3];
+	$other_options = $wiki_array[3];
 ```
 Since we only need the alternate options, we can use `array_shift` to remove the first item from our new array. Finally, we'll set the number of alternate options as a variable that we can display later.
 
 ```php
-$first_item = array_shift($other_options);
-$other_options_count = count($other_options);
+	$first_item = array_shift($other_options);
+	$other_options_count = count($other_options);
 ```
 
 To identify who performed the Wikipedia search, we'll insert the linked username of the user, along with the text that was searched for. Both the user_id and user_name are part of the `$_POST` variables that came over with the slash command. This will also be the start of the string that we'll send to Slack as the `text` parameter of the main message.
 
 ```php
-$message_text = "<@".$user_id."|".$user_name."> searched for *".$text."*.\n";
+	$message_text = "<@".$user_id."|".$user_name."> searched for *".$text."*.\n";
 ```
 Next we want to verify whether the primary search result is a disambiguation page or not. If the first item in `$wiki_array[2]` contains the string "may refer to:", then we know it's a disambiguation page. (**Note:** This is not the greatest way to test something like this, because Wikipedia could conceivably change that text, but it's the only bit of info in our JSON object that identifies these pages.)
 
 In PHP we can use the `strpos()` function to check whether a specific string exists within any other string. That's useful in this case because we don't know what the value of `$wiki_array[2][0]` is at this point. 
 
 ```php
-if (strpos($wiki_array[2][0],"may refer to:") !== false) {
-	$disambiguation_check = TRUE;
-}
+	if (strpos($wiki_array[2][0],"may refer to:") !== false) {
+		$disambiguation_check = TRUE;
+	}
 ```
+In keeping with my habit of obvious naming for later maintainability, we'll set some variables for the pieces of the primary result
 
+```php
 	$message_primary_title		=	$wiki_array[1][0];
 	$message_primary_summary	=	$wiki_array[2][0];
 	$message_primary_link		=	$wiki_array[3][0];
+```
+And finally we're ready to create the message and attachments that we'll send into Slack through the webhook.
 
+```php
 	if(count($wiki_array[1]) == 0){
-		$message_text = "Sorry! I couldn't find anything like that.";
+		$message_text = "Sorry! I couldn't find anything like ".$text.".";
 	} else {
 		if ($disambiguation_check == TRUE) { // see if it's a disambiguation page
 			$message_text	.= "There are several possible results for ";
-			$message_text	.= "*<".$wiki_att_link."|".$text.">*.\n";
-			$message_text	.= $wiki_att_link;
+			$message_text	.= "*<".$message_primary_link."|".$text.">*.\n";
+			$message_text	.= $message_primary_link;
 			$message_other_title = "Here are some of the possibilities:";
 		} else {
-			$message_text	.= 	"*<".$wiki_att_link."|".$wiki_att_title.">*\n";
-			$message_text	.= 	$wiki_att_desc."\n";
-			$message_text	.= 	$wiki_att_link;
+			$message_text	.= 	"*<".$message_primary_link."|".$message_primary_title.">*\n";
+			$message_text	.= 	$message_primary_summary."\n";
+			$message_text	.= 	$message_primary_link;
 			$message_other_title 	= 	"Here are a few other options:";
 		}
 		foreach ($other_options as $value) {
 			$message_other_options .= $value."\n";
 		}
 	}
-}else{
-	$message_text = "I didn't get a response from Wikipedia.";
-}
+} // closing out the initial `if` statement
 ```
 
 

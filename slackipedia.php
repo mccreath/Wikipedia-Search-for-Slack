@@ -97,23 +97,23 @@ if($wiki_response !== FALSE){
 	$message_primary_link			=	$wiki_array[3][0];
 
 	if(count($wiki_array[1]) == 0){
-		$wiki_att_text = "Sorry! I couldn't find anything like that.";
+		$message_attachment_text = "Sorry! I couldn't find anything like that.";
 	} else {
-		$wiki_att_text = "";
-		$wiki_att_other = "";
-		if ($disambiguation_check){
+		$message_attachment_text = "";
+		$message_other_options = "";
+		if ($disambiguation_check == TRUE){
 			$message_text	.= "There are several possible results for ";
 			$message_text	.= "*<".$message_primary_link."|".$text.">*.\n";
 			$message_text	.= $message_primary_link;
-			$wiki_att_other_title = "Here are some of the possibilities:";
+			$$message_other_options_title = "Here are some of the possibilities:";
 		} else {
 			$message_text	.= 	"*<".$message_primary_link."|".$message_primary_title.">*\n";
 			$message_text	.= 	$message_primary_summary."\n";
 			$message_text	.= 	$message_primary_link;
-			$wiki_att_other_title 	= 	"Here are a few other options:";
+			$message_other_options_title 	= 	"Here are a few other options:";
 		}
 		foreach ($other_options as $value) {
-			$wiki_att_other .= $value."\n";
+			$message_other_options .= $value."\n";
 		}
 	}
 
@@ -130,16 +130,16 @@ $data = array(
  		 array(
 			"color" => "#b0c4de",
  		//	"title" => $message_primary_title,
- 			"fallback" => $wiki_att_text,
- 			"text" => $wiki_att_text,
+ 			"fallback" => $message_attachment_text,
+ 			"text" => $message_attachment_text,
  			"mrkdwn_in" => array(
  				"fallback",
  				"text"
  			),
  			"fields" => array(
  				array(
- 					"title" => $wiki_att_other_title,
- 					"value" => $wiki_att_other
+ 					"title" => $message_other_options_title,
+ 					"value" => $message_other_options
  				)
  			)
  		)
