@@ -429,9 +429,15 @@ In keeping with my habit of obvious naming for later maintainability, we'll set 
 ```
 And finally we're ready to create the message and attachments that we'll send into Slack through the webhook.
 
+To start with, if we got a reply from Wikipedia, but the reply was that nothing could be found, then `$wiki_array[1]` will be empty, and that's all we need to send back through the webhook.
+
 ```php
 	if(count($wiki_array[1]) == 0){
-		$message_text = "Sorry! I couldn't find anything like ".$text.".";
+		$message_text = "Sorry! I couldn't find anything like *".$text."*.";
+```
+If we did get results, then first we check to see whether we're dealing with a disambiguation page, and make the `$message_text` reflect that.
+
+```php
 	} else {
 		if ($disambiguation_check == TRUE) { // see if it's a disambiguation page
 			$message_text	.= "There are several possible results for ";
@@ -442,15 +448,50 @@ And finally we're ready to create the message and attachments that we'll send in
 			$message_text	.= 	"*<".$message_primary_link."|".$message_primary_title.">*\n";
 			$message_text	.= 	$message_primary_summary."\n";
 			$message_text	.= 	$message_primary_link;
-			$message_other_title 	= 	"Here are a few other options:";
+			$message_other_title = "Here are a few other options:";
 		}
+```
+Then we loop through the other options, putting a line break between each one. Remember, we're only displaying the link for each of the other options, and Slack will autoformat a complete link, so all we have to do is send the link itself.
+
+```php
 		foreach ($other_options as $value) {
 			$message_other_options .= $value."\n";
 		}
-	}
-} // closing out the initial `if` statement
+	} // close the `if` where we check the count of `$wiki_array[1]`
+} // close the `if` where we verify that `$wiki_response` is not FALSE
 ```
 
+### Building the final PHP Array for the Payload
+
+The last step is to put all the variables we just made into a new array, and encode them as JSON to pass to the incoming webhook. (The first two items, `username` and `icon_url` are not strictly necessary because we already set those on the configuration page. I included them here because you _can_ use these to override the default settings of a webhook.)
+
+```php
+$data = array(
+	"username" => "Slackipedia",
+ 	"icon_url" => $icon_url,
+	"channel" => $channel_id,
+	"text" => $message_text,
+ 	"mrkdwn" => true,
+ 	"attachments" => array(
+ 		 array(
+			"color" => "#b0c4de",
+ 			"fallback" => $message_attachment_text,
+ 			"text" => $message_attachment_text,
+ 			"mrkdwn_in" => array(
+ 				"fallback",
+ 				"text"
+ 			),
+ 			"fields" => array(
+ 				array(
+ 					"title" => $message_other_options_title,
+ 					"value" => $message_other_options
+ 				)
+ 			)
+ 		)
+ 	)
+);
+$json_string = json_encode($data);        
+```
 
 <!-- Slash command config -->
 

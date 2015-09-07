@@ -97,7 +97,7 @@ if($wiki_response !== FALSE){
 	$message_primary_link			=	$wiki_array[3][0];
 
 	if(count($wiki_array[1]) == 0){
-		$message_attachment_text = "Sorry! I couldn't find anything like that.";
+		$message_attachment_text = "Sorry! I couldn't find anything like *".$text."*.";
 	} else {
 		$message_attachment_text = "";
 		$message_other_options = "";
@@ -116,7 +116,6 @@ if($wiki_response !== FALSE){
 			$message_other_options .= $value."\n";
 		}
 	}
-
 }
 	
 // Send it back through the webhook
@@ -147,17 +146,17 @@ $data = array(
 );
 $json_string = json_encode($data);        
 
-$ch = curl_init($slack_webhook_url);
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
-curl_setopt($ch, CURLOPT_POSTFIELDS, $json_string);
-curl_setopt($ch, CURLOPT_CRLF, true);                                                               
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
-curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+$slack_call = curl_init($slack_webhook_url);
+curl_setopt($slack_call, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
+curl_setopt($slack_call, CURLOPT_POSTFIELDS, $json_string);
+curl_setopt($slack_call, CURLOPT_CRLF, true);                                                               
+curl_setopt($slack_call, CURLOPT_RETURNTRANSFER, true);                                                                      
+curl_setopt($slack_call, CURLOPT_HTTPHEADER, array(                                                                          
     "Content-Type: application/json",                                                                                
     "Content-Length: " . strlen($json_string))                                                                       
 );                                                                                                                   
-$result = curl_exec($ch);
-curl_close($ch);
+$result = curl_exec($slack_call);
+curl_close($slack_call);
 
 
 
