@@ -367,8 +367,6 @@ We'll put the linked name of the person who performed the search in the main mes
 
 The search results will go in an attachment. Because Wikipedia will always return more than one result, we'll put the primary result in the attachment's text field, then the other options in attachment fields, which will help differentiate them from the primary result. To keep the in-channel message from getting too long, we'll just display the link for each of those items.
 
-
-
 <!-- 
 * Message
 	* text - The basic text of the message. We'll use that to send in some information about the search that was run.
@@ -394,7 +392,7 @@ if($wiki_response !== FALSE){
 	$wiki_array = json_decode($wiki_response);
 ```
 
-While we're working with the array, we'll put our non-primary results into their own array called `$other_options` so they'll be easier to work with. We're only going to display the link for each of these items, which are all in the third sub-array of `$wiki_array`. 
+While we're working with the array, we'll put our non-primary results into their own array called `$other_options` so they'll be easier to work with. We're only going to display the link for each of these items, which are all in the third sub-array of `$wiki_array`.
 
 ```php
 	$other_options = $wiki_array[3];
@@ -435,6 +433,7 @@ To start with, if we got a reply from Wikipedia, but the reply was that nothing 
 	if(count($wiki_array[1]) == 0){
 		$message_text = "Sorry! I couldn't find anything like *".$text."*.";
 ```
+
 If we did get results, then first we check to see whether we're dealing with a disambiguation page, and make the `$message_text` reflect that.
 
 ```php
@@ -451,6 +450,7 @@ If we did get results, then first we check to see whether we're dealing with a d
 			$message_other_title = "Here are a few other options:";
 		}
 ```
+
 Then we loop through the other options, putting a line break between each one. Remember, we're only displaying the link for each of the other options, and Slack will autoformat a complete link, so all we have to do is send the link itself.
 
 ```php
@@ -468,13 +468,14 @@ The last step is to put all the variables we just made into a new array, and enc
 ```php
 $data = array(
 	"username" => "Slackipedia",
- 	"icon_url" => $icon_url,
 	"channel" => $channel_id,
 	"text" => $message_text,
  	"mrkdwn" => true,
+ 	"icon_url" => $icon_url,
  	"attachments" => array(
  		 array(
 			"color" => "#b0c4de",
+ 		//	"title" => $message_primary_title,
  			"fallback" => $message_attachment_text,
  			"text" => $message_attachment_text,
  			"mrkdwn_in" => array(
@@ -491,7 +492,20 @@ $data = array(
  	)
 );
 $json_string = json_encode($data);        
+
+$slack_call = curl_init($slack_webhook_url);
+curl_setopt($slack_call, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
+curl_setopt($slack_call, CURLOPT_POSTFIELDS, $json_string);
+curl_setopt($slack_call, CURLOPT_CRLF, true);                                                               
+curl_setopt($slack_call, CURLOPT_RETURNTRANSFER, true);                                                                      
+curl_setopt($slack_call, CURLOPT_HTTPHEADER, array(                                                                          
+    "Content-Type: application/json",                                                                                
+    "Content-Length: " . strlen($json_string))                                                                       
+);                                                                                                                   
+$result = curl_exec($slack_call);
+curl_close($slack_call);
 ```
+## Final Touches
 
 <!-- Slash command config -->
 
