@@ -1,4 +1,4 @@
-# slackipedia
+# Wikipedia Search for Slack
 
 PHP script for searching Wikipedia from Slack.
 
