@@ -6,7 +6,6 @@
 
 * A custom slash command on a Slack team
 * A web server running PHP5 with cURL enabled
-* Nerves of steel
 
 ## USAGE
 
