@@ -14,4 +14,4 @@ Comments in the script will guide you through the setup if you're familiar with 
 
 * Flesh out the [tutorial](https://github.com/mccreath/Wikipedia-Search-for-Slack/blob/master/docs/TUTORIAL.md)
 * Convert to other languages/environments (RoR, Node, Go, Python)
-* Test comment
+* Test comment!
