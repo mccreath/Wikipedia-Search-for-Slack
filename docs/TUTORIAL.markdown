@@ -46,7 +46,7 @@ Our script is going to
 
 ## Set up your slash command
 
-Go to your integrations page at Slack (http://my.slack.com/services/new) and scroll down to the bottom section, "DIY Integrations & Customizations". Click on the "Add" button for "Slash Commands".
+See https://api.slack.com/interactivity/slash-commands#creating_commands on how to create a new app for slash commands.
 
 ![Add a slash command integration](add-slash-command.png)
 
